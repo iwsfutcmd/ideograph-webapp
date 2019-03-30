@@ -1,0 +1,60 @@
+body {
+    margin: 16px;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    block-size: 64px;
+    inline-size: 100%;
+    background-color: lightgrey;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#component-form {
+    margin: 16px;
+}
+
+.scratchpad-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#scratchpad {
+    block-size: 100%;
+    box-sizing: border-box;
+    font-size: 3em; 
+}
+
+.buttons button {
+    inline-size: 100%;
+}
+
+main {
+    padding-block-start: 32px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.ideograph-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ideograph {
+    font-size: 5em;
+}
+
+.links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
