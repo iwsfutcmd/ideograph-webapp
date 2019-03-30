@@ -27,5 +27,5 @@ async def lookup(request, components):
     return response.text("".join(ideographs))
 
 if __name__ == "__main__":
-    app.run(port=int(os.environ.get("PORT")))
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT")))
     # app.run()
