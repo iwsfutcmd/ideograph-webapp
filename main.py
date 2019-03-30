@@ -1,3 +1,5 @@
+import os
+
 from jinja2 import Template
 from sanic import Sanic, response
 import ideograph
@@ -25,4 +27,5 @@ async def lookup(request, components):
     return response.text("".join(ideographs))
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port=os.environ["$PORT"])
+    # app.run()
