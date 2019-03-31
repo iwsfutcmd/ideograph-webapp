@@ -18,29 +18,18 @@ header {
 
 #component-form {
     margin: 16px;
+    font-size: 2em;
 }
 
-.scratchpad-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-
-#scratchpad {
-    block-size: 100%;
-    box-sizing: border-box;
-    font-size: 3em; 
-}
-
-.buttons button {
-    inline-size: 100%;
+#components {
+    font-size: 1em;
 }
 
 main {
     padding-block-start: 32px;
     display: flex;
     flex-direction: row;
-    align-items: flex-end;
+    align-items: flex-start;
     flex-wrap: wrap;
 }
 
@@ -48,10 +37,18 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
+    inline-size: 96px;
+    min-block-size: 144px;
 }
 
 .ideograph {
     font-size: 5em;
+    list-style: none;
+    text-align: center;
+}
+
+.components {
+    font-size: 3em;
 }
 
 .links {

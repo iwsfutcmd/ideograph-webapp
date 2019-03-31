@@ -9,11 +9,6 @@
   <meta name="author" content="Ben Yang">
 
   <link rel="stylesheet" href="static/css/styles.css?v=1.0">
-  <script type="text/javascript">
-    ideoClick = e => document.getElementById("scratchpad").value += e.innerText;
-    clearScratchpad = () => document.getElementById("scratchpad").value = "";
-    copyScratchpad = () => navigator.clipboard.writeText(document.getElementById("scratchpad").value);
-  </script>
 </head>
 
 <body>
@@ -31,19 +26,14 @@
         />
       </span>
     </form>
-    <div class="scratchpad-container">
-      <input
-        type="text"
-        id="scratchpad"
-        autocomplete="off"
-      />
-      <button onclick="copyScratchpad()">Copy</button>
-    </div>
   </header>
   <main>  
     {%- for ideograph in ideographs -%}
       <span class="ideograph-container">
-        <span class="ideograph" onclick="ideoClick(this);">{{ ideograph[0] }}</span>
+        <details>
+          <summary class="ideograph">{{ ideograph[0] }}</summary>
+          <span class="components">{{ ideograph[1] }}</span>
+        </details>
         <div class="links">
           <a href="https://en.wiktionary.org/wiki/{{ ideograph[0] }}" target="_blank">w</a>
           <a href="https://translate.panlex.org/?langDe=cmn-000&langAl=eng-000&txt={{ ideograph[0] }}&trnTrn=1" target="_blank">p(s)</a>

@@ -15,17 +15,14 @@ async def main(request):
     except KeyError:
         components = ""
     template = Template(open("form.jinja2").read())
-    ideographs = [(i, "%X" % ord(i)) for i in sorted(ideograph.find(components))]
+    ideographs = [(i, "".join(sorted(ideograph.components(i)))) for i in sorted(ideograph.find(components))]
     return response.html(template.render(
         components=components,
         ideographs=ideographs
         ))
 
-@app.route("/<components>")
-async def lookup(request, components):
-    ideographs = ideograph.find(components)
-    return response.text("".join(ideographs))
-
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT")))
-    # app.run()
+    try:
+        app.run(host="0.0.0.0", port=int(os.environ.get("PORT")))
+    except TypeError:
+        app.run()
