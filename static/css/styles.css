@@ -6,14 +6,27 @@ header {
     position: fixed;
     top: 0;
     left: 0;
-    block-size: 64px;
+    block-size: 160px;
     inline-size: 100%;
     background-color: lightgrey;
     overflow: hidden;
     display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.top-row {
+    inline-size: 100%;
+    display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+}
+
+.common-components {
+    inline-size: 100%;
+    padding-inline-start: 16px;
+    font-size: 3em;
 }
 
 #component-form {
@@ -25,8 +38,13 @@ header {
     font-size: 1em;
 }
 
+#scratchpad {
+    font-size: 2em;
+    margin: 16px;
+}
+
 main {
-    padding-block-start: 32px;
+    padding-block-start: 128px;
     display: flex;
     flex-direction: row;
     align-items: flex-start;
@@ -37,12 +55,13 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    inline-size: 96px;
-    min-block-size: 144px;
+    inline-size: 144px;
+    min-block-size: 216px;
+    justify-content: space-between;
 }
 
 .ideograph {
-    font-size: 5em;
+    font-size: 8em;
     list-style: none;
     text-align: center;
 }
@@ -54,4 +73,5 @@ main {
 .links {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    font-size: 1.5em;
 }

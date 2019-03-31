@@ -13,19 +13,33 @@
 
 <body>
   <header>
-    <form id="component-form" action="/" method="get">
-      <span>
-        <label for="components">Components:</label>
-        <input 
-          type="text" 
-          id="components" 
-          name="components"
+    <div class="top-row">
+      <form id="component-form" action="/" method="get">
+        <span>
+          <label for="components">Components:</label>
+          <input 
+            type="text" 
+            id="components" 
+            name="components"
+            autocomplete="off"
+            autofocus
+            value="{{ components }}"
+          />
+        </span>
+      </form>
+      <div class="scratchpad-container">
+        <input
+          type="text"
+          id="scratchpad"
           autocomplete="off"
-          autofocus
-          value="{{ components }}"
         />
-      </span>
-    </form>
+      </div>
+    </div>
+    <div class="common-components">
+      {%- for cmp in common_components -%}
+        <span>{{ cmp }}</span>
+      {%- endfor -%}
+    </div>
   </header>
   <main>  
     {%- for ideograph in ideographs -%}
