@@ -47,7 +47,7 @@ main {
     /* padding-block-start: 128px; */
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
+    align-items: flex-end;
     flex-wrap: wrap;
 }
 
@@ -56,8 +56,8 @@ main {
     flex-direction: column;
     align-items: center;
     inline-size: 144px;
-    min-block-size: 216px;
-    justify-content: space-between;
+    min-block-size: 252px;
+    justify-content: flex-end;
 }
 
 .ideograph {
@@ -66,8 +66,17 @@ main {
     text-align: center;
 }
 
+details {
+    inline-size: 100%;
+}
+
 .components {
     font-size: 3em;
+    position: absolute;
+    background-color: white;
+    border: 1px black solid;
+    inline-size: 144px;
+    box-shadow: 2px 2px 5px black;
 }
 
 .links {

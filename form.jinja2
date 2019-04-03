@@ -8,7 +8,11 @@
   <meta name="description" content="Ideograph Finder">
   <meta name="author" content="Ben Yang">
 
-  <link rel="stylesheet" href="static/css/styles.css?v=1.0">
+  <link rel="stylesheet" href="static/css/styles.css">
+
+  <script>
+    cmpClick = tag => document.getElementById("components").value += tag.innerText;
+  </script>
 </head>
 
 <body>
@@ -37,7 +41,7 @@
     </div>
     <div class="common-components">
       {%- for cmp in common_components -%}
-        <span>{{ cmp }}</span>
+        <span onclick="cmpClick(this)">{{ cmp }}</span>
       {%- endfor -%}
     </div>
   </header>
@@ -46,7 +50,11 @@
       <span class="ideograph-container">
         <details>
           <summary class="ideograph">{{ ideograph[0] }}</summary>
-          <span class="components">{{ ideograph[1] }}</span>
+          <span class="components">
+          {%- for component in ideograph[1] -%}
+            <span onclick="cmpClick(this)">{{ component }}</span>
+          {%- endfor -%}  
+          </span>
         </details>
         <div class="links">
           <a href="https://en.wiktionary.org/wiki/{{ ideograph[0] }}" target="_blank">w</a>
