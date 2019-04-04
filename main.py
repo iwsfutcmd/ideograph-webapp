@@ -3,7 +3,7 @@ import json
 import sqlite3
 from pathlib import Path
 
-import unicodedata2 as unicodedata
+import unicodedataplus as unicodedata
 # import redis
 from jinja2 import Template
 from sanic import Sanic, response
