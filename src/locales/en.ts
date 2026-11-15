@@ -55,9 +55,6 @@ const en = {
   linkUnihan: "Unihan Database",
   linkZiTools: "zi.tools",
   linkGlyphWiki: "GlyphWiki",
-  linkPanLexCmnHans: "PanLex (Mandarin, simplified)",
-  linkPanLexCmnHant: "PanLex (Mandarin, traditional)",
-  linkPanLexYue: "PanLex (Cantonese)",
 };
 
 export default en;

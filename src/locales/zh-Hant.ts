@@ -54,9 +54,6 @@ const messages: Messages = {
   linkUnihan: "Unihan 資料庫",
   linkZiTools: "字統網",
   linkGlyphWiki: "GlyphWiki",
-  linkPanLexCmnHans: "PanLex（官話，簡體）",
-  linkPanLexCmnHant: "PanLex（官話，繁體）",
-  linkPanLexYue: "PanLex（粵語）",
 };
 
 export default messages;

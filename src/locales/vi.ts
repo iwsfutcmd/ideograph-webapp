@@ -54,9 +54,6 @@ const messages: Messages = {
   linkUnihan: "Cơ sở dữ liệu Unihan",
   linkZiTools: "zi.tools",
   linkGlyphWiki: "GlyphWiki",
-  linkPanLexCmnHans: "PanLex (tiếng Quan Thoại, giản thể)",
-  linkPanLexCmnHant: "PanLex (tiếng Quan Thoại, phồn thể)",
-  linkPanLexYue: "PanLex (tiếng Quảng Đông)",
 };
 
 export default messages;

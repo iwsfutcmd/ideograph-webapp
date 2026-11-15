@@ -12,7 +12,7 @@ not 杜), `口口口` finds 品 and 器. The character details show how often ea
 component occurs (e.g. 木 ×3 in 森). Each
 character shows its Ideographic Description Sequences (with IRG source
 references), its components (click one to add it to the search), and links to
-Wiktionary, the Unihan Database, zi.tools, GlyphWiki and PanLex.
+Wiktionary, the Unihan Database, zi.tools and GlyphWiki.
 
 The search runs entirely in the browser, so the site is a static page hosted on
 GitHub Pages. The old server version (Sanic + Redis, last deployed on Heroku)

@@ -75,9 +75,6 @@ const messages: Messages = {
   linkUnihan: "قاعدة بيانات Unihan",
   linkZiTools: "zi.tools",
   linkGlyphWiki: "GlyphWiki",
-  linkPanLexCmnHans: "PanLex (الماندرينية، الكتابة المبسّطة)",
-  linkPanLexCmnHant: "PanLex (الماندرينية، الكتابة التقليدية)",
-  linkPanLexYue: "PanLex (الكانتونية)",
 };
 
 export default messages;

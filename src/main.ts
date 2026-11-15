@@ -61,12 +61,9 @@ function systemHanFonts(lang: string): string {
   return [...fonts].map((f) => `"${f}"`).join(", ");
 }
 
-/** UI locale → Wiktionary edition and PanLex target variety. */
+/** UI locale → Wiktionary edition. */
 const WIKTIONARY: Record<string, string> = {
   en: "en", "zh-Hans": "zh", "zh-Hant": "zh", ja: "ja", ko: "ko", vi: "vi", ar: "ar",
-};
-const PANLEX_TARGET: Record<string, string> = {
-  en: "eng-000", "zh-Hans": "cmn-000", "zh-Hant": "cmn-001", ja: "jpn-000", ko: "kor-000", vi: "vie-000", ar: "arb-000",
 };
 
 function storageGet<T>(key: string, fallback: T): T {
@@ -358,17 +355,11 @@ function openDetails(char: string): void {
 
   const enc = encodeURIComponent(char);
   const hex = char.codePointAt(0)!.toString(16).toUpperCase();
-  const target = PANLEX_TARGET[t.locale] ?? "eng-000";
-  const panlex = (from: string) =>
-    `https://translate.panlex.org/?langDe=${from}&langAl=${target}&txt=${enc}&trnTrn=1`;
   const links: [string, string][] = [
     [t.t("linkWiktionary"), `https://${WIKTIONARY[t.locale] ?? "en"}.wiktionary.org/wiki/${enc}`],
     [t.t("linkUnihan"), `https://www.unicode.org/cgi-bin/GetUnihanData.pl?codepoint=${hex}`],
     [t.t("linkZiTools"), `https://zi.tools/zi/${enc}`],
     [t.t("linkGlyphWiki"), `https://glyphwiki.org/wiki/u${hex.toLowerCase()}`],
-    [t.t("linkPanLexCmnHans"), panlex("cmn-000")],
-    [t.t("linkPanLexCmnHant"), panlex("cmn-001")],
-    [t.t("linkPanLexYue"), panlex("yue-000")],
   ];
   $("details-links").replaceChildren(
     ...links.map(([label, href]) => {
