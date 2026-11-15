@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-layout="horizontal">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Ideograph Finder</title>
+    <meta name="description" content="Find Han characters (漢字) by their components" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='86' font-size='90' text-anchor='middle'%3E%E5%AD%97%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <hgroup>
+        <h1 data-i18n="title">Ideograph Finder</h1>
+        <p data-i18n="tagline">Find Han characters (漢字) by their components</p>
+      </hgroup>
+      <details class="settings">
+        <summary data-i18n="settings">Settings</summary>
+        <div class="settings-body">
+          <label class="field">
+            <span data-i18n="uiLanguage">Language</span>
+            <select id="ui-locale"></select>
+          </label>
+          <label class="field">
+            <span data-i18n="glyphForms">Glyph forms</span>
+            <select id="glyph-locale"></select>
+          </label>
+          <fieldset class="field">
+            <legend data-i18n="layout">Layout</legend>
+            <label><input type="radio" name="layout" value="horizontal" checked /> <span data-i18n="layoutHorizontal">Horizontal</span></label>
+            <label><input type="radio" name="layout" value="vertical" /> <span data-i18n="layoutVertical">Vertical</span></label>
+          </fieldset>
+        </div>
+      </details>
+    </header>
+
+    <main>
+      <section class="inputs">
+        <form id="search-form" class="field" role="search" action="" method="get">
+          <label for="components" data-i18n="componentsLabel">Components</label>
+          <div class="input-row">
+            <input
+              id="components"
+              name="components"
+              class="han"
+              type="text"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              aria-describedby="components-hint"
+              autofocus
+            />
+            <button type="button" id="clear-components" data-i18n="clear">Clear</button>
+          </div>
+          <p class="hint" id="components-hint" data-i18n="componentsHint"></p>
+        </form>
+        <div class="field">
+          <label for="scratchpad" data-i18n="scratchpadLabel">Scratchpad</label>
+          <div class="input-row">
+            <input
+              id="scratchpad"
+              class="han"
+              type="text"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              aria-describedby="scratchpad-hint"
+            />
+            <button type="button" id="copy-scratchpad" data-i18n="copy">Copy</button>
+          </div>
+          <p class="hint" id="scratchpad-hint" data-i18n="scratchpadHint"></p>
+        </div>
+      </section>
+
+      <section class="palette">
+        <div id="recent-block" class="chip-group" hidden>
+          <div class="chip-heading">
+            <h2 id="recent-heading" data-i18n="recentComponents">Recently used</h2>
+            <button type="button" id="clear-recent" class="link-button" data-i18n="clearRecent">Forget</button>
+          </div>
+          <ul id="recent" class="chips han" aria-labelledby="recent-heading"></ul>
+        </div>
+        <div class="chip-group">
+          <h2 id="common-heading" data-i18n="commonComponents">Common components</h2>
+          <ul id="common" class="chips han" aria-labelledby="common-heading"></ul>
+        </div>
+      </section>
+
+      <section class="results">
+        <p id="status" role="status" aria-live="polite"></p>
+        <p id="ignored" class="hint" hidden></p>
+        <ul id="results" class="result-grid han"></ul>
+        <button type="button" id="show-more" hidden></button>
+      </section>
+    </main>
+
+    <dialog id="details" aria-labelledby="details-char">
+      <div class="details-head">
+        <p id="details-char" class="details-char han"></p>
+        <dl class="details-facts">
+          <dt>Unicode</dt>
+          <dd><bdi id="details-codepoint" dir="ltr"></bdi></dd>
+          <dd id="details-strokes"></dd>
+        </dl>
+        <form method="dialog" class="details-close">
+          <button value="close" data-i18n="close">Close</button>
+        </form>
+      </div>
+      <div class="details-actions">
+        <button type="button" id="details-scratchpad" data-i18n="addToScratchpad">Add to scratchpad</button>
+        <button type="button" id="details-copy" data-i18n="copy">Copy</button>
+      </div>
+      <h3 data-i18n="structure">Structure (IDS)</h3>
+      <ul id="details-ids" class="ids-list"></ul>
+      <h3 id="details-direct-heading" data-i18n="components">Components</h3>
+      <ul id="details-direct" class="chips han" aria-labelledby="details-direct-heading"></ul>
+      <h3 id="details-all-heading" data-i18n="allComponents">All components</h3>
+      <ul id="details-all" class="chips han" aria-labelledby="details-all-heading"></ul>
+      <h3 data-i18n="lookUp">Look up</h3>
+      <ul id="details-links" class="links"></ul>
+    </dialog>
+
+    <footer class="site-footer">
+      <p id="data-sources"></p>
+      <p data-i18n="fontNote"></p>
+      <p data-i18n="licenseNote"></p>
+      <p><a href="https://github.com/iwsfutcmd/ideograph-webapp" data-i18n="sourceCode">Source code</a> · <a href="https://github.com/iwsfutcmd/ideograph">ideograph</a></p>
+    </footer>
+  </body>
+</html>

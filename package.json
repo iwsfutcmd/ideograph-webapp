@@ -1,0 +1,21 @@
+{
+  "name": "ideograph-webapp",
+  "private": true,
+  "version": "2.0.0",
+  "description": "Web interface for ideograph: find ideographs by their components",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "data": "python3 scripts/build_data.py"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.0"
+  }
+}
