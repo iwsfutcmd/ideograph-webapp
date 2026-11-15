@@ -4,7 +4,7 @@
  * and `ideograph.components()`.
  */
 
-import { idsComponents, isOperator, UNKNOWN } from "./ids";
+import { idsComponentList, isOperator, UNKNOWN } from "./ids";
 
 export interface IDSRecord {
   sequence: string;
@@ -15,14 +15,18 @@ export interface Meta {
   library_version: string;
   info: Record<string, string>;
   aliases: Record<string, string>;
+  /** Decomposition links to ignore, which would otherwise form cycles. */
+  cycle_breaks?: Record<string, string[]>;
   component_strokes: Record<string, number>;
 }
 
 export interface SearchResult {
   /** Matching ideographs, sorted by stroke count, then code point. */
   chars: string[];
-  /** Query components that were used. */
+  /** Query components that were used (distinct). */
   used: string[];
+  /** How many times each used component is required (at least). */
+  required: Map<string, number>;
   /** Query characters ignored because nothing contains them. */
   ignored: string[];
 }
@@ -35,6 +39,9 @@ export class IdeographData {
   private readonly strokes = new Map<string, number>();
   private readonly idsMap = new Map<string, IDSRecord[]>();
   private readonly children = new Map<string, string[]>();
+  /** Per IDS (regional form): its direct components, with repetitions. */
+  private readonly forms = new Map<string, string[]>();
+  private readonly countCache = new Map<string, Map<string, number>>();
   private readonly parents = new Map<string, string[]>();
   private readonly aliases: Map<string, string>;
   private readonly cache = new Map<string, Set<string>>();
@@ -51,13 +58,17 @@ export class IdeographData {
       const char = fields[0];
       if (fields[1]) this.strokes.set(char, Number(fields[1]));
       const records: IDSRecord[] = [];
+      const cut = meta.cycle_breaks?.[char];
       const direct = new Set<string>();
+      const forms: string[] = [];
       for (let i = 2; i + 1 < fields.length; i += 2) {
         records.push({ sequence: fields[i], sources: fields[i + 1] });
-        for (const c of idsComponents(fields[i])) direct.add(c);
+        const list = idsComponentList(fields[i]).filter((c) => c !== char && !cut?.includes(c));
+        for (const c of list) direct.add(c);
+        if (list.length) forms.push(list.join(""));
       }
-      direct.delete(char);
       this.idsMap.set(char, records);
+      this.forms.set(char, forms);
       const kids = [...direct];
       this.children.set(char, kids);
       for (const kid of kids) {
@@ -132,18 +143,62 @@ export class IdeographData {
     return found;
   }
 
-  /** Ideographs that contain all of the components in `query`. */
-  find(query: string): SearchResult {
-    const used: string[] = [];
-    const ignored: string[] = [];
-    for (const c of new Set(this.normalize(query))) {
-      if (/\s/u.test(c) || isOperator(c) || c === UNKNOWN) continue;
-      (this.isKnown(c) ? used : ignored).push(c);
+  /**
+   * How many times `component` occurs in `char`, at any depth (森 = ⿱木林 and
+   * 林 = ⿰木木, so 木 occurs 3 times in 森).  A character counts as containing
+   * itself once.  Where a character has several IDS (regional forms), the
+   * largest count is used.  Mirrors `ideograph.component_counts()`.
+   */
+  countIn(char: string, component: string): number {
+    const contains = this.containing(component);
+    if (!contains.has(char)) return 0;
+    let memo = this.countCache.get(component);
+    if (!memo) {
+      if (this.countCache.size > 16) this.countCache.delete(this.countCache.keys().next().value!);
+      this.countCache.set(component, (memo = new Map()));
     }
-    if (!used.length) return { chars: [], used, ignored };
+    const stack = new Set<string>();
+    const inside = (c: string): number => {
+      const known = memo.get(c);
+      if (known !== undefined) return known;
+      if (stack.has(c)) return 0; // decomposition cycle
+      stack.add(c);
+      let best = 0;
+      for (const form of this.forms.get(c) ?? []) {
+        let total = 0;
+        for (const d of form) {
+          if (d === component) total += 1;
+          if (contains.has(d)) total += inside(d);
+        }
+        if (total > best) best = total;
+      }
+      stack.delete(c);
+      memo.set(c, best);
+      return best;
+    };
+    return (char === component ? 1 : 0) + inside(char);
+  }
+
+  /**
+   * Ideographs that contain all of the components in `query`.  A component
+   * given more than once must occur at least that many times (木木 → 林, 森 …).
+   */
+  find(query: string): SearchResult {
+    const required = new Map<string, number>();
+    const ignored: string[] = [];
+    for (const c of this.normalize(query)) {
+      if (/\s/u.test(c) || isOperator(c) || c === UNKNOWN) continue;
+      if (this.isKnown(c)) required.set(c, (required.get(c) ?? 0) + 1);
+      else if (!ignored.includes(c)) ignored.push(c);
+    }
+    const used = [...required.keys()];
+    if (!used.length) return { chars: [], used, required, ignored };
     const sets = used.map((c) => this.containing(c)).sort((a, b) => a.size - b.size);
-    const chars = [...sets[0]].filter((c) => sets.every((s) => s.has(c))).sort(this.compare);
-    return { chars, used, ignored };
+    let chars = [...sets[0]].filter((c) => sets.every((s) => s.has(c)));
+    for (const [component, n] of required) {
+      if (n > 1) chars = chars.filter((c) => this.countIn(c, component) >= n);
+    }
+    return { chars: chars.sort(this.compare), used, required, ignored };
   }
 
   /** Components of `char`: direct ones only, or all of them recursively. */

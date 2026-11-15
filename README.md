@@ -6,7 +6,10 @@ Han characters (漢字) by their components.
 **<https://iwsfutcmd.github.io/ideograph-webapp/>**
 
 Type components (e.g. `木日勿`) or pick them from the palette, and every
-character that contains all of them is listed, ordered by stroke count. Each
+character that contains all of them is listed, ordered by stroke count. Repeat
+a component to require it at least that many times: `木木` finds 林 and 森 (but
+not 杜), `口口口` finds 品 and 器. The character details show how often each
+component occurs (e.g. 木 ×3 in 森). Each
 character shows its Ideographic Description Sequences (with IRG source
 references), its components (click one to add it to the search), and links to
 Wiktionary, the Unihan Database, zi.tools, GlyphWiki and PanLex.

@@ -144,7 +144,7 @@ function glyphLang(): string {
   return "und-Hani";
 }
 
-function chip(char: string, onClick: "add" | "details" = "add"): HTMLLIElement {
+function chip(char: string, onClick: "add" | "details" = "add", occurrences = 1): HTMLLIElement {
   const li = document.createElement("li");
   const button = document.createElement("button");
   button.type = "button";
@@ -154,7 +154,19 @@ function chip(char: string, onClick: "add" | "details" = "add"): HTMLLIElement {
   button.textContent = char;
   const strokes = data?.strokeCount(char);
   const label = onClick === "add" ? t.t("addComponent", { char }) : t.t("showDetails", { char });
-  button.title = `${codePoint(char)}${strokes === undefined ? "" : " · " + t.plural("strokes", strokes)}\n${label}`;
+  const facts = [codePoint(char)];
+  if (strokes !== undefined) facts.push(t.plural("strokes", strokes));
+  if (occurrences > 1) {
+    facts.push(t.plural("occurrences", occurrences));
+    // Visible multiplicity badge; the count is also in the title for AT.
+    const badge = document.createElement("span");
+    badge.className = "count";
+    badge.setAttribute("aria-hidden", "true");
+    badge.dir = "ltr";
+    badge.textContent = "×" + t.n(occurrences);
+    button.append(badge);
+  }
+  button.title = `${facts.join(" · ")}\n${label}`;
   li.append(button);
   return li;
 }
@@ -168,7 +180,7 @@ function applyStaticText(): void {
   root.dataset.layout = settings.layout;
   document.title = t.t("title");
   for (const el of document.querySelectorAll<HTMLElement>("[data-i18n]")) {
-    el.textContent = t.t(el.dataset.i18n as Parameters<Translator["t"]>[0]);
+    el.textContent = t.t(el.dataset.i18n as Parameters<Translator["t"]>[0], { example: "木木" });
   }
   const info = meta.info;
   $("data-sources").textContent = t.t("dataSources", {
@@ -315,6 +327,9 @@ function openDetails(char: string): void {
       const li = document.createElement("li");
       const seq = document.createElement("span");
       seq.className = "han ids";
+      // IDS are prefix expressions read left to right; the operators are
+      // bidi-neutral, so isolate them as LTR inside RTL text.
+      seq.dir = "ltr";
       seq.lang = glyphLang();
       seq.textContent = sequence;
       li.append(seq);
@@ -328,9 +343,9 @@ function openDetails(char: string): void {
     }),
   );
 
-  const fill = (id: string, chars: string[]): void => {
+  const fill = (id: string, chars: string[], counted = false): void => {
     const el = $(id);
-    if (chars.length) el.replaceChildren(...chars.map((c) => chip(c)));
+    if (chars.length) el.replaceChildren(...chars.map((c) => chip(c, "add", counted ? data!.countIn(char, c) : 1)));
     else {
       const li = document.createElement("li");
       li.className = "empty";
@@ -339,7 +354,7 @@ function openDetails(char: string): void {
     }
   };
   fill("details-direct", data.components(char, false));
-  fill("details-all", data.components(char));
+  fill("details-all", data.components(char), true);
 
   const enc = encodeURIComponent(char);
   const hex = char.codePointAt(0)!.toString(16).toUpperCase();

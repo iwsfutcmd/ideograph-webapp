@@ -35,6 +35,35 @@ describe("IdeographData", () => {
     expect(data.find("人").chars).not.toContain("你");
   });
 
+  it("treats a repeated component as 'at least that many'", () => {
+    const two = data.find("木木");
+    expect(two.required.get("木")).toBe(2);
+    expect(two.chars).toEqual(expect.arrayContaining(["林", "森", "麻"]));
+    expect(two.chars).not.toContain("杜");
+    expect(two.chars).not.toContain("木");
+    expect(data.find("木木木").chars).toContain("森");
+    expect(data.find("木木木").chars).not.toContain("林");
+    expect(data.find("口口口").chars).toEqual(expect.arrayContaining(["品", "器"]));
+    expect(data.find("口口口口").chars).toContain("器");
+    expect(data.find("口口口口").chars).not.toContain("品");
+    expect(data.find("木 日 木").chars).toEqual(data.find("木木日").chars);
+    expect(data.find("⽊木").chars).toEqual(two.chars);
+  });
+
+  it("counts occurrences at every depth", () => {
+    expect(data.countIn("森", "木")).toBe(3);
+    expect(data.countIn("森", "林")).toBe(1);
+    expect(data.countIn("器", "口")).toBe(4);
+    expect(data.countIn("木", "木")).toBe(1);
+    expect(data.countIn("杜", "日")).toBe(0);
+  });
+
+  it("ignores decomposition links that would form cycles", () => {
+    // 𫝀 = ㇯五一 ("五 minus 一") while 五 = ⿱一𫝀
+    expect(data.find("五").chars).not.toContain("\u{2B740}");
+    expect(data.find("五").chars).toContain("伍");
+  });
+
   it("ignores characters that are not components", () => {
     const r = data.find("木 x⿰");
     expect(r.ignored).toEqual(["x"]);

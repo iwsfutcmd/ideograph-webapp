@@ -243,6 +243,21 @@ fieldset.field legend {
   justify-content: center;
 }
 
+/* Occurrence count on a component chip ("×3"), in the end-end corner. */
+.chip:has(.count) {
+  position: relative;
+}
+
+.chip .count {
+  position: absolute;
+  inset-block-end: 0.05rem;
+  inset-inline-end: 0.15rem;
+  font-family: system-ui, sans-serif;
+  font-size: 0.6rem;
+  line-height: 1;
+  color: var(--accent);
+}
+
 .chip {
   font-family: var(--han);
   font-size: 1.6rem;

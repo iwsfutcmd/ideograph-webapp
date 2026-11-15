@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { idsComponents } from "../src/ids";
+import { idsComponentList, idsComponents } from "../src/ids";
 
 // Same cases as tests/test_ideograph.py::test_ids_syntax in the Python package.
 describe("idsComponents", () => {
@@ -19,5 +19,13 @@ describe("idsComponents", () => {
   it("falls back to all non-operators for malformed IDS", () => {
     expect([...idsComponents("⿰木")]).toEqual(["木"]);
     expect([...idsComponents("⿰木日月")].sort()).toEqual(["日", "月", "木"].sort());
+  });
+});
+
+describe("idsComponentList", () => {
+  it("keeps repetitions", () => {
+    expect(idsComponentList("⿱口⿰口口")).toEqual(["口", "口", "口"]);
+    expect(idsComponentList("⿰木木")).toEqual(["木", "木"]);
+    expect(idsComponentList("㇯⿰木木木")).toEqual(["木", "木"]);
   });
 });

@@ -33,20 +33,21 @@ function isVariationSelector(char: string): boolean {
 class IDSSyntaxError extends Error {}
 
 /**
- * The components named in one IDS (one level deep).  Operators, ？ and the
- * second operand of ㇯ (the part that is removed) are not components.  A
- * malformed IDS yields every non-operator character in it.
+ * The components named in one IDS (one level deep), in order and with
+ * repetitions: "⿱口⿰口口" → ["口", "口", "口"].  Operators, ？ and the second
+ * operand of ㇯ (the part that is removed) are not components.  A malformed
+ * IDS yields every non-operator character in it.
  */
-export function idsComponents(ids: string): Set<string> {
+export function idsComponentList(ids: string): string[] {
   const tokens = Array.from(ids).filter((c) => !isVariationSelector(c));
-  const found = new Set<string>();
+  const found: string[] = [];
   let pos = 0;
   const parse = (collect: boolean): void => {
     if (pos >= tokens.length) throw new IDSSyntaxError(ids);
     const token = tokens[pos++];
     const arity = ARITY.get(token);
     if (arity === undefined) {
-      if (collect && token !== UNKNOWN) found.add(token);
+      if (collect && token !== UNKNOWN) found.push(token);
       return;
     }
     for (let operand = 0; operand < arity; operand++) {
@@ -59,6 +60,11 @@ export function idsComponents(ids: string): Set<string> {
     return found;
   } catch (e) {
     if (!(e instanceof IDSSyntaxError)) throw e;
-    return new Set(tokens.filter((c) => !isOperator(c) && c !== UNKNOWN));
+    return tokens.filter((c) => !isOperator(c) && c !== UNKNOWN);
   }
+}
+
+/** The distinct components named in one IDS (one level deep). */
+export function idsComponents(ids: string): Set<string> {
+  return new Set(idsComponentList(ids));
 }

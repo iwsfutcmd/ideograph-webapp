@@ -5,8 +5,9 @@ Writes:
 
 * ``src/data/ideographs.txt`` — one line per ideograph, tab-separated:
   ``character, total strokes, IDS₁, sources₁, IDS₂, sources₂, …``
-* ``src/data/meta.json`` — provenance, radical aliases and stroke counts for
-  components that are not ideographs themselves (CJK strokes, radical forms).
+* ``src/data/meta.json`` — provenance, radical aliases, decomposition links to
+  ignore (cycle breaks), and stroke counts for components that are not
+  ideographs themselves (CJK strokes, radical forms).
 
 Requires ideograph ≥ 2.0::
 
@@ -52,6 +53,7 @@ def main() -> None:
         "library_version": ideograph.__version__,
         "info": ideograph.data_info(),
         "aliases": ideograph.aliases(),
+        "cycle_breaks": {c: sorted(v, key=ord) for c, v in sorted(ideograph.cycle_breaks().items())},
         "component_strokes": component_strokes,
     }
     (OUT / "meta.json").write_text(
