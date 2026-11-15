@@ -10,6 +10,9 @@
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='86' font-size='90' text-anchor='middle'%3E%E5%AD%97%3C/text%3E%3C/svg%3E"
     />
+    <!-- GlyphWiki webfont (Jigmo), generated at build time by scripts/build_font.py.
+         Only @font-face rules: font files are fetched on demand per unicode-range. -->
+    <link rel="stylesheet" href="/fonts/glyphwiki.css" />
     <link rel="stylesheet" href="/src/style.css" />
     <script type="module" src="/src/main.ts"></script>
   </head>
@@ -29,6 +32,10 @@
           <label class="field">
             <span data-i18n="glyphForms">Glyph forms</span>
             <select id="glyph-locale"></select>
+          </label>
+          <label class="field">
+            <span data-i18n="hanFont">Han font</span>
+            <select id="han-font"></select>
           </label>
           <fieldset class="field">
             <legend data-i18n="layout">Layout</legend>

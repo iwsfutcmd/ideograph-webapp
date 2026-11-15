@@ -21,8 +21,30 @@ per-browser list of recently used ones (stored in `localStorage`).
 
 All 101,997 CJK unified ideographs in **Unicode 18.0**, including Extension J.
 See the [ideograph data notes](https://github.com/iwsfutcmd/ideograph/blob/master/DATA.md)
-for sources. To see characters from the newer extensions you need a font that
-covers them, such as BabelStone Han, Jigmo or Plangothic.
+for sources.
+
+### Fonts
+
+Every character can be displayed without installing anything: the site serves
+[Jigmo](https://kamichikoichi.github.io/jigmo/) (字雲), a CC0 font generated from
+[GlyphWiki](https://glyphwiki.org/) glyphs that covers all CJK unified
+ideographs through Unicode 17.0. Characters added later (currently only
+U+2B81E) are taken directly from GlyphWiki's SVG glyphs into a small
+supplementary font.
+
+The font is split into about 1,000 WOFF2 pieces of ~20 KB with CSS
+`unicode-range` rules, so the browser downloads only the pieces containing
+characters it actually has to draw. By default Han text uses the system's CJK
+fonts first (ordered by the selected glyph region) and GlyphWiki only for
+characters they lack; **Settings → Han font → GlyphWiki** uses it for everything,
+for one consistent design.
+
+The pieces are generated at build time by `scripts/build_font.py` (not committed):
+
+```bash
+pip install -r scripts/requirements.txt
+python3 scripts/build_font.py   # writes public/fonts/
+```
 
 ## Internationalization
 
@@ -48,6 +70,7 @@ catalogue has the same keys and placeholders as English.
 
 ```bash
 npm install
+python3 scripts/build_font.py   # optional: GlyphWiki webfont (see Fonts)
 npm run dev      # development server
 npm test         # unit tests (vitest)
 npm run build    # production build in dist/
@@ -71,7 +94,10 @@ npm run data     # runs scripts/build_data.py
 
 ## Licence
 
-The code is MIT-licensed (see [LICENSE](LICENSE)). The character data in
+The code is MIT-licensed (see [LICENSE](LICENSE)). The Jigmo font is released
+under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) (its licence
+file is served alongside the font pieces); supplementary glyphs come from
+[GlyphWiki](https://glyphwiki.org/), under GlyphWiki's licence terms. The character data in
 `src/data/` includes data derived from CHISE IDS and is distributed under the
 [GNU GPL, version 2 or later](LICENSES/GPL-2.0-or-later.txt); it also includes
 data from the Unicode Character Database

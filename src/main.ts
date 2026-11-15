@@ -7,10 +7,12 @@ import dataUrl from "./data/ideographs.txt?url";
 // Settings (persisted in localStorage when available)
 
 type Layout = "horizontal" | "vertical";
+type HanFont = "system" | "glyphwiki";
 
 interface Settings {
   uiLocale: string | null; // null: follow the browser
   glyphLocale: string; // "auto" or a BCP 47 tag
+  hanFont: HanFont; // system fonts first, or GlyphWiki (Jigmo) for everything
   layout: Layout;
 }
 
@@ -29,6 +31,35 @@ const GLYPH_LOCALES: { tag: string; region: string }[] = [
   { tag: "ko-KR", region: "KR" },
   { tag: "vi-VN", region: "VN" },
 ];
+
+/**
+ * Common system CJK fonts per glyph region (macOS, Windows, Linux/Android).
+ * They are tried after the generic sans-serif family, the selected region's
+ * fonts first, so regional glyph forms are kept even in browsers whose
+ * generic family ignores the lang attribute; anything none of them cover
+ * falls through to the GlyphWiki webfont.
+ */
+const SYSTEM_HAN_FONTS: Record<string, string[]> = {
+  "zh-Hant": ["PingFang TC", "Microsoft JhengHei", "Noto Sans CJK TC", "Noto Sans TC", "Source Han Sans TC", "PMingLiU", "PMingLiU-ExtB", "MingLiU-ExtB"],
+  "zh-Hans": ["PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC", "WenQuanYi Zen Hei", "SimSun", "SimSun-ExtB", "SimSun-ExtG"],
+  "zh-HK": ["PingFang HK", "Noto Sans CJK HK", "Noto Sans HK", "Source Han Sans HC", "MingLiU_HKSCS", "MingLiU_HKSCS-ExtB"],
+  ja: ["Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "YuGothic", "Meiryo", "Noto Sans CJK JP", "Noto Sans JP", "Source Han Sans JP"],
+  ko: ["Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans CJK KR", "Noto Sans KR", "Source Han Sans KR"],
+  vi: ["Nom Na Tong", "Han Nom A", "Han Nom B"],
+};
+
+function systemHanFonts(lang: string): string {
+  const region = lang.startsWith("zh-Hans")
+    ? "zh-Hans"
+    : lang.startsWith("zh-Hant-HK")
+      ? "zh-HK"
+      : lang.startsWith("zh")
+        ? "zh-Hant"
+        : lang.split("-")[0];
+  const order = [region, ...Object.keys(SYSTEM_HAN_FONTS).filter((r) => r !== region)];
+  const fonts = new Set(order.flatMap((r) => SYSTEM_HAN_FONTS[r] ?? []));
+  return [...fonts].map((f) => `"${f}"`).join(", ");
+}
 
 /** UI locale → Wiktionary edition and PanLex target variety. */
 const WIKTIONARY: Record<string, string> = {
@@ -58,6 +89,7 @@ function storageSet(key: string, value: unknown): void {
 const settings: Settings = storageGet<Settings>(SETTINGS_KEY, {
   uiLocale: null,
   glyphLocale: "auto",
+  hanFont: "system",
   layout: "horizontal",
 });
 let recent: string[] = (() => {
@@ -85,6 +117,7 @@ const recentEl = $<HTMLUListElement>("recent");
 const recentBlock = $<HTMLDivElement>("recent-block");
 const uiLocaleSelect = $<HTMLSelectElement>("ui-locale");
 const glyphLocaleSelect = $<HTMLSelectElement>("glyph-locale");
+const hanFontSelect = $<HTMLSelectElement>("han-font");
 const dialog = $<HTMLDialogElement>("details");
 
 let t = new Translator(settings.uiLocale ?? negotiate(navigator.languages));
@@ -160,6 +193,11 @@ function applyStaticText(): void {
       return option;
     }),
   );
+  hanFontSelect.replaceChildren(
+    new Option(t.t("hanFontSystem"), "system", false, settings.hanFont === "system"),
+    new Option(t.t("hanFontGlyphWiki"), "glyphwiki", false, settings.hanFont === "glyphwiki"),
+  );
+  root.dataset.hanFont = settings.hanFont;
   for (const radio of document.querySelectorAll<HTMLInputElement>('input[name="layout"]')) {
     radio.checked = radio.value === settings.layout;
   }
@@ -168,6 +206,7 @@ function applyStaticText(): void {
 
 function applyGlyphLang(): void {
   const lang = glyphLang();
+  root.style.setProperty("--han-system", systemHanFonts(lang));
   for (const el of document.querySelectorAll<HTMLElement>(".han")) el.lang = lang;
 }
 
@@ -402,6 +441,11 @@ glyphLocaleSelect.addEventListener("change", () => {
   storageSet(SETTINGS_KEY, settings);
   applyGlyphLang();
 });
+hanFontSelect.addEventListener("change", () => {
+  settings.hanFont = hanFontSelect.value as HanFont;
+  storageSet(SETTINGS_KEY, settings);
+  root.dataset.hanFont = settings.hanFont;
+});
 for (const radio of document.querySelectorAll<HTMLInputElement>('input[name="layout"]')) {
   radio.addEventListener("change", () => {
     settings.layout = radio.value as Layout;
@@ -412,6 +456,29 @@ for (const radio of document.querySelectorAll<HTMLInputElement>('input[name="lay
 
 // ---------------------------------------------------------------------------
 // Start
+
+// Chromium sometimes keeps drawing "missing glyph" boxes for characters whose
+// GlyphWiki font piece (unicode-range) finished loading after the text was
+// laid out, until the layout boxes are rebuilt.  So after each batch of font
+// loads, rebuild the boxes of the character lists (not the inputs, which
+// would lose focus).
+{
+  const ids = ["results", "common", "recent", "details-char", "details-ids", "details-direct", "details-all"];
+  let timer = 0;
+  document.fonts.addEventListener("loadingdone", () => {
+    clearTimeout(timer);
+    timer = window.setTimeout(() => {
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        el.style.display = "none";
+        void el.offsetHeight; // force layout
+        el.style.removeProperty("display");
+      }
+    }, 50);
+  });
+}
+
 
 componentsInput.value = new URLSearchParams(location.search).get("components") ?? "";
 renderAll();

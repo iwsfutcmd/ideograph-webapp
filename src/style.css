@@ -15,13 +15,24 @@
   --chip-hover: light-dark(#e6e1d6, #353940);
   --accent: light-dark(#a3302b, #ff8f80);
   --radius: 0.5rem;
-  /* Han text: the generic family first, so the browser picks a font that
-     matches the element's lang (glyph forms), then fonts with very wide
-     coverage, if installed, for characters the system fonts lack. */
-  --han: sans-serif, "Plangothic P1", "Plangothic P2", "Jigmo", "Jigmo2", "Jigmo3", "BabelStone Han",
-    "HanaMinA", "HanaMinB", "TH-Tshyn-P0", "TH-Tshyn-P1", "TH-Tshyn-P2", "TH-Tshyn-P16";
+  /* Han text: the generic family first, so the browser picks a system font
+     that matches the element's lang (regional glyph forms); then common
+     system CJK fonts, the selected region's first (--han-system, set by
+     main.ts); then fonts with very wide coverage if installed locally; then
+     the GlyphWiki webfont (Jigmo, see scripts/build_font.py), split by
+     unicode-range so only the pieces actually needed are downloaded. */
+  --glyphwiki: "Ideograph Jigmo", "Ideograph GlyphWiki";
+  --han-system: "Noto Sans CJK TC", "Noto Sans CJK SC", "Noto Sans CJK JP", "Noto Sans CJK KR";
+  --han: sans-serif, var(--han-system), "Plangothic P1", "Plangothic P2", "Jigmo", "Jigmo2", "Jigmo3",
+    "BabelStone Han", "HanaMinA", "HanaMinB", "TH-Tshyn-P0", "TH-Tshyn-P1", "TH-Tshyn-P2", "TH-Tshyn-P16",
+    var(--glyphwiki);
   font-family: system-ui, sans-serif;
   line-height: 1.5;
+}
+
+/* Settings → Han font → GlyphWiki for everything (one consistent design). */
+:root[data-han-font="glyphwiki"] {
+  --han: var(--glyphwiki), sans-serif;
 }
 
 [hidden] {
