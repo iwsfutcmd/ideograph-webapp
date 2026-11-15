@@ -21,7 +21,10 @@
      main.ts); then fonts with very wide coverage if installed locally; then
      the GlyphWiki webfont (Jigmo, see scripts/build_font.py), split by
      unicode-range so only the pieces actually needed are downloaded. */
-  --glyphwiki: "Ideograph Jigmo", "Ideograph GlyphWiki";
+  /* The supplement only covers characters Jigmo lacks, and goes first:
+     Chromium does not always fall back from one web font that lacks a glyph
+     to the next. */
+  --glyphwiki: "Ideograph GlyphWiki", "Ideograph Jigmo";
   --han-system: "Noto Sans CJK TC", "Noto Sans CJK SC", "Noto Sans CJK JP", "Noto Sans CJK KR";
   --han: sans-serif, var(--han-system), "Plangothic P1", "Plangothic P2", "Jigmo", "Jigmo2", "Jigmo3",
     "BabelStone Han", "HanaMinA", "HanaMinB", "TH-Tshyn-P0", "TH-Tshyn-P1", "TH-Tshyn-P2", "TH-Tshyn-P16",

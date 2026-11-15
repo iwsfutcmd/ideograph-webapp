@@ -216,7 +216,15 @@ def build_supplement(missing: list[int]) -> list[str]:
     fb.setupGlyphOrder(names)
     fb.setupCharacterMap(dict(zip(svgs, names[1:])))
     fb.setupGlyf(glyphs)
-    fb.setupHorizontalMetrics({n: (UPM, 0) for n in names})
+    glyf = fb.font["glyf"]
+    for name in names:
+        glyf[name].recalcBounds(glyf)
+    # TrueType positions outlines by the side bearings, which must match the
+    # bounds (lsb = xMin) *before* removeOverlaps, which redraws each glyph
+    # relative to its lsb.
+    fb.setupHorizontalMetrics(
+        {n: (UPM, glyf[n].xMin if glyf[n].numberOfContours else 0) for n in names}
+    )
     fb.setupHorizontalHeader(ascent=ASCENT, descent=-DESCENT)
     fb.setupVerticalMetrics({n: (UPM, 0) for n in names})
     fb.setupVerticalHeader(ascent=UPM // 2, descent=-UPM // 2)
@@ -226,12 +234,12 @@ def build_supplement(missing: list[int]) -> list[str]:
     font = fb.font
     # KAGE strokes overlap; merge them so the outlines fill correctly.
     removeOverlaps(font)
-    glyf = font["glyf"]
     for name in names[1:]:
         glyph = glyf[name]
         glyph.recalcBounds(glyf)
-        # Vertical origin at the top of the em box: top side bearing = ascent − yMax.
-        font["vmtx"][name] = (UPM, ASCENT - glyph.yMax if glyph.numberOfContours else 0)
+        if glyph.numberOfContours:
+            # Vertical origin at the top of the em box: tsb = ascent − yMax.
+            font["vmtx"][name] = (UPM, ASCENT - glyph.yMax)
     font.flavor = "woff2"
     font.save(OUT / "glyphwiki-supplement.woff2")
     print(f"  GlyphWiki supplement: {len(svgs)} glyph(s): "
